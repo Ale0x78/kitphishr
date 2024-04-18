@@ -130,7 +130,7 @@ func main() {
 				if hasSuffixes(requrl, []string{".tar", ".bz2", ".gz", ".7z", ".tar.gz", ".tgz", ".tar.Z", ".tar.bz2", ".tbz2", ".tar.lz", ".tlz", ".tar.xz", ".txz", ".tar.zst"}) {
 
 					// make sure it's a valid archive file
-					if resp.ContentLength > 0 && resp.ContentLength < MAX_DOWNLOAD_SIZE && strings.Contains(resp.ContentType, []string{"zip", "tar", "gz", "bz", "7z"}) {
+					if resp.ContentLength > 0 && resp.ContentLength < MAX_DOWNLOAD_SIZE && containsSubstringsAny(resp.ContentType, []string{"zip", "tar", "gz", "bz", "7z"}) {
 
 						if verbose {
 							color.Green.Printf("archive file found from URL folder at %s\n", requrl)
