@@ -25,6 +25,24 @@ var defaultOutputDir string
 var ua string
 var index *os.File
 
+func hasSuffixes(target string, suffixes []string) bool{
+	for _, suffix := range suffixes {
+		if strings.HasSuffix(target, suffix) {
+			return true
+		}
+	}
+	return false
+}
+
+func containsSubstringsAny(target string, substrings []string) bool{
+	for _, substring := range substrings {
+		if strings.Contains(target, substring) {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 
 	flag.IntVar(&concurrency, "c", 50, "set the concurrency level")
@@ -106,15 +124,16 @@ func main() {
 				}
 
 				requrl := resp.URL
-
+				// .tar, .bz2, .gz, .7z, .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .tar.lz, .tlz, .tar.xz, .txz, .tar.zst
+				// Expand to all of the types above
 				// if we found a zip from a URL path
-				if strings.HasSuffix(requrl, ".zip") {
+				if hasSuffixes(requrl, []string{".tar", ".bz2", ".gz", ".7z", ".tar.gz", ".tgz", ".tar.Z", ".tar.bz2", ".tbz2", ".tar.lz", ".tlz", ".tar.xz", ".txz", ".tar.zst"}) {
 
-					// make sure it's a valid zip
-					if resp.ContentLength > 0 && resp.ContentLength < MAX_DOWNLOAD_SIZE && strings.Contains(resp.ContentType, "zip") {
+					// make sure it's a valid archive file
+					if resp.ContentLength > 0 && resp.ContentLength < MAX_DOWNLOAD_SIZE && strings.Contains(resp.ContentType, []string{"zip", "tar", "gz", "bz", "7z"}) {
 
 						if verbose {
-							color.Green.Printf("Zip found from URL folder at %s\n", requrl)
+							color.Green.Printf("archive file found from URL folder at %s\n", requrl)
 						} else {
 							fmt.Println(requrl)
 						}
